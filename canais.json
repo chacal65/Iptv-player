@@ -1,0 +1,46 @@
+{
+    "A&E": [
+        "https://aipapai.shop/_temp/ae.m3u8",
+        "https://embmaxtv.online/aee/index.m3u8"
+    ],
+    "AXN": [
+        "https://aipapai.shop/_temp/axn.m3u8",
+        "https://embmaxtv.online/axn/index.m3u8"
+    ],
+    "Discovery Channel": [
+        "https://aipapai.shop/_temp/discoverychannel.m3u8",
+        "https://embmaxtv.online/discoverychannel/index.m3u8"
+    ],
+    "Globo SP": [
+        "https://aipapai.shop/_temp/globosp.m3u8",
+        "https://embmaxtv.online/globosp/index.m3u8"
+    ],
+    "CNN Brasil": [
+        "https://aipapai.shop/_temp/cnnbrasil.m3u8",
+        "https://embmaxtv.online/cnnbrasil/index.m3u8"
+    ],
+    "HBO": [
+        "https://aipapai.shop/_temp/hbo.m3u8",
+        "https://embmaxtv.online/hbo/index.m3u8"
+    ],
+    "HBO 2": [
+        "https://aipapai.shop/_temp/hbo2.m3u8",
+        "https://embmaxtv.online/hbo2/index.m3u8"
+    ],
+    "History": [
+        "https://aipapai.shop/_temp/history.m3u8",
+        "https://embmaxtv.online/history/index.m3u8"
+    ],
+    "Telecine Premium": [
+        "https://aipapai.shop/_temp/telecinepremium.m3u8",
+        "https://embmaxtv.online/tcpremium/index.m3u8"
+    ],
+    "Telecine Action": [
+        "https://aipapai.shop/_temp/telecineaction.m3u8",
+        "https://embmaxtv.online/tcaction/index.m3u8"
+    ],
+    "Megapix": [
+        "https://aipapai.shop/_temp/megapix.m3u8",
+        "https://embmaxtv.online/megapix/index.m3u8"
+    ]
+}
