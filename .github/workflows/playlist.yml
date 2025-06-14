@@ -1,0 +1,37 @@
+name: Gerar Playlist IPTV
+
+on:
+  push:
+    paths:
+      - 'canais.json'
+  schedule:
+    - cron: '*/30 * * * *'  # Executa a cada 30 minutos
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Verificar links
+        run: python verificar_links.py
+
+      - name: Gerar playlist
+        run: python gerar_playlist.py
+
+      - name: Commit e Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add lista.m3u canais.json
+          git commit -m "Atualização automática da playlist"
+          git push
