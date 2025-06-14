@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Chacal IPTV Player</title>
+    <title>Chacal IPTV Teste</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body {
@@ -18,37 +18,9 @@
             text-align: center;
             font-size: 24px;
         }
-        #search {
-            width: 90%;
-            margin: 15px auto;
-            display: block;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            font-size: 16px;
-        }
         .container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
             padding: 20px;
-        }
-        .canal {
-            background-color: #1f1f1f;
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .canal:hover {
-            background-color: #333;
-        }
-        .nome {
-            font-size: 18px;
-            flex: 1;
+            text-align: center;
         }
         video {
             width: 90%;
@@ -58,3 +30,48 @@
             border: 3px solid #333;
             border-radius: 12px;
         }
+        .botao {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 10px;
+        }
+        .botao:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<header>🔥 Chacal IPTV Teste 🔥</header>
+
+<div class="container">
+    <button class="botao" onclick="play('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">▶️ Tocar Link Teste</button>
+    <button class="botao" onclick="cast('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">📺 Abrir no Web Video Caster</button>
+    <video id="player" controls autoplay></video>
+</div>
+
+<script>
+    const player = document.getElementById('player');
+
+    function play(url) {
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(player);
+        } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
+            player.src = url;
+        }
+    }
+
+    function cast(url) {
+        window.location.href = `intent://${url}#Intent;package=com.instantbits.cast.webvideo;end;`;
+    }
+</script>
+
+</body>
+</html>
