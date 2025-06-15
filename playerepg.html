@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🔥 Chacal IPTV Player + EPG Real 🔥</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    body {background-color: #121212; color: white; font-family: Arial, sans-serif; margin: 0;}
+    header {background-color: #1f1f1f; padding: 15px; text-align: center; font-size: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.7);}
+    .search {width: 90%; margin: 10px auto; display: block; padding: 10px; border-radius: 8px; border: none; font-size: 16px;}
+    video {display: block; width: 90%; max-height: 400px; margin: 15px auto; background: #000; border-radius: 12px;}
+    ul {list-style: none; padding: 0; margin: 0 5%;}
+    li {background: #1e1e1e; padding: 12px 16px; margin-bottom: 8px; border-radius: 10px; display: flex; flex-direction: column; transition: background 0.3s;}
+    li:hover {background: #333;}
+    .line {display: flex; justify-content: space-between; align-items: center; width: 100%;}
+    .canal {flex: 1; cursor: pointer; font-weight: bold;}
+    .canal:hover {text-decoration: underline;}
+    .cast {color: #ffffffa0; cursor: pointer; font-size: 20px; margin-left: 10px;}
+    .cast:hover {color: white;}
+    .epg {font-size: 13px; color: #aaa; margin-top: 5px;}
+  </style>
+</head>
+
+<body>
+
+<header>🔥 Chacal IPTV Player + EPG Real 🔥</header>
+
+<input type="text" class="search" placeholder="🔍 Buscar canal..." oninput="filterChannels(this.value)">
+
+<video id="player" controls autoplay></video>
+
+<ul id="channelList"></ul>
+
+<script>
+const canais = [
+  { nome: "A&E", url: "https://aipapai.shop/_temp/ae.m3u8", epgId: "ae.com" },
+  { nome: "AXN", url: "https://aipapai.shop/_temp/axn.m3u8", epgId: "axn.com" },
+  { nome: "Discovery Channel", url: "https://aipapai.shop/_temp/discoverychannel.m3u8", epgId: "discoverychannel.com" },
+  { nome: "Globo SP", url: "https://aipapai.shop/_temp/globosp.m3u8", epgId: "globosp.com" },
+  { nome: "CNN Brasil", url: "https://aipapai.shop/_temp/cnnbrasil.m3u8", epgId: "cnnbrasil.com" },
+  { nome: "HBO", url: "https://aipapai.shop/_temp/hbo.m3u8", epgId: "hbo.com" },
+  { nome: "HBO 2", url: "https://aipapai.shop/_temp/hbo2.m3u8", epgId: "hbo2.com" },
+  { nome: "HBO Xtreme", url: "https://aipapai.shop/_temp/hboxtreme.m3u8", epgId: "hboxtreme.com" },
+  { nome: "History", url: "https://aipapai.shop/_temp/history.m3u8", epgId: "history.com" },
+  { nome: "History 2", url: "https://aipapai.shop/_temp/history2.m3u8", epgId: "history2.com" },
+  { nome: "Telecine Premium", url: "https://aipapai.shop/_temp/telecinepremium.m3u8", epgId: "tcpremium.com" },
+  { nome: "Telecine Action", url: "https://aipapai.shop/_temp/telecineaction.m3u8", epgId: "tcaction.com" },
+  { nome: "Telecine Touch", url: "https://aipapai.shop/_temp/telecinetouch.m3u8", epgId: "tctouch.com" },
+  { nome: "Megapix", url: "https://aipapai.shop/_temp/megapix.m3u8", epgId: "megapix.com" },
+  { nome: "Cinemax", url: "https://aipapai.shop/_temp/cinemax.m3u8", epgId: "cinemax.com" },
+  { nome: "ESPN", url: "https://aipapai.shop/_temp/espn.m3u8", epgId: "espn.com" },
+  { nome: "GloboNews", url: "https://aipapai.shop/_temp/globonews.m3u8", epgId: "globonews.com" },
+  { nome: "Sony Channel", url: "https://aipapai.shop/_temp/sonychannel.m3u8", epgId: "sonychannel.com" },
+  { nome: "Sportv 2", url: "https://aipapai.shop/_temp/sportv2.m3u8", epgId: "sportv2.com" },
+  { nome: "Universal TV", url: "https://aipapai.shop/_temp/universaltv.m3u8", epgId: "universaltv.com" },
+  { nome: "TNT Series", url: "https://aipapai.shop/_temp/tntseries.m3u8", epgId: "tntseries.com" },
+  { nome: "SBT", url: "https://aipapai.shop/_temp/sbt.m3u8", epgId: "sbt.com" },
+  { nome: "Record", url: "https://aipapai.shop/_temp/record.m3u8", epgId: "record.com" }
+];
+
+const epgURL = "https://api.allorigins.win/raw?url=https://iptv-org.github.io/epg/guides/br.xml";
+const epgData = {};
+
+fetch(epgURL)
+  .then(response => response.text())
+  .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+  .then(data => {
+    const programmes = data.getElementsByTagName("programme");
+    const now = new Date();
+
+    [...programmes].forEach(p => {
+      const start = parseDate(p.getAttribute("start"));
+      const stop = parseDate(p.getAttribute("stop"));
+      const channel = p.getAttribute("channel");
+      const title = p.getElementsByTagName("title")[0]?.textContent || "";
+
+      if (!epgData[channel]) epgData[channel] = { agora: null, depois: null };
+
+      if (start <= now && stop > now) {
+        epgData[channel].agora = title;
+      } else if (start > now && (!epgData[channel].depois || start < epgData[channel].depoisStart)) {
+        epgData[channel].depois = title;
+        epgData[channel].depoisStart = start;
+      }
+    });
+
+    gerarLista();
+  });
+
+function parseDate(str) {
+  return new Date(
+    str.slice(0,4), str.slice(4,6)-1, str.slice(6,8),
+    str.slice(8,10), str.slice(10,12), str.slice(12,14)
+  );
+}
+
+function gerarLista() {
+  const list = document.getElementById('channelList');
+  canais.forEach(canal => {
+    const li = document.createElement('li');
+
+    const line = document.createElement('div');
+    line.className = "line";
+
+    const spanCanal = document.createElement('span');
+    spanCanal.className = "canal";
+    spanCanal.innerText = canal.nome;
+    spanCanal.onclick = () => play(canal.url);
+
+    const spanCast = document.createElement('span');
+    spanCast.className = "cast";
+    spanCast.innerText = "📺";
+    spanCast.onclick = () => cast(canal.url);
+
+    line.appendChild(spanCanal);
+    line.appendChild(spanCast);
+
+    const epg = epgData[canal.epgId] ?
+      `<div class="epg">▶️ Agora: ${epgData[canal.epgId].agora || "N/D"}<br>⏭️ Depois: ${epgData[canal.epgId].depois || "N/D"}</div>` :
+      `<div class="epg">EPG não encontrado</div>`;
+
+    li.appendChild(line);
+    li.insertAdjacentHTML("beforeend", epg);
+
+    list.appendChild(li);
+  });
+}
+
+function play(url) {
+  const video = document.getElementById('player');
+  if (window.hls) window.hls.destroy();
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    window.hls = hls;
+    hls.loadSource(url);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      video.play();
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = url;
+    video.addEventListener('loadedmetadata', function() {
+      video.play();
+    });
+  } else {
+    alert('Seu navegador não suporta este vídeo!');
+  }
+}
+
+function cast(url) {
+  const wvcUrl = `wvc://play?url=${encodeURIComponent(url)}`;
+  window.location.href = wvcUrl;
+}
+
+function filterChannels(search) {
+  const items = document.querySelectorAll('#channelList li');
+  items.forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(search.toLowerCase()) ? 'flex' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
